@@ -61,7 +61,7 @@ class BaseColorspaceComponent:
     def __eq__(self, other):
         if isinstance(other, self.__class__):
             return self._tuplerepr() == other._tuplerepr()
-        return NotImplemented
+        return False
 
 
 @dataclasses.dataclass(eq=False)
@@ -322,15 +322,21 @@ class RgbColorspace(BaseColorspaceComponent):
 
         If the transfer functions are already linear, just return a regular copy.
         """
-        colorspace = self.copy()
+        new_colorspace = self.copy()
 
         if not self.transfer_functions or self.transfer_functions.are_linear:
-            return colorspace
+            return new_colorspace
 
-        colorspace._linear_source = self
-        colorspace.name = colorspace.name + " Linear"
-        colorspace.transfer_functions = TRANSFER_FUNCTIONS_LINEAR
-        return colorspace
+        # noinspection PyTypeChecker
+        return RgbColorspace(
+            name=new_colorspace.name + " Linear",
+            description=new_colorspace.description,
+            gamut=new_colorspace.gamut,
+            whitepoint=new_colorspace.whitepoint,
+            transfer_functions=TRANSFER_FUNCTIONS_LINEAR,
+            categories=new_colorspace.categories,
+            _linear_source=self,
+        )
 
     def retrieve_linear_source(self) -> Optional[RgbColorspace]:
         """
