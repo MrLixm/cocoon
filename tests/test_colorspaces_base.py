@@ -129,7 +129,7 @@ def test_RgbColorspace_fromColour():
 
     colorspace = colorspaces.RgbColorspace.from_colour_colorspace(
         colour_colorspace,
-        categories=(colorspaces.ColorspaceCategory.common,),
+        categories=[colorspaces.ColorspaceCategory.common],
     )
 
     assert colorspace.name == "sRGB Piecewise"
@@ -153,7 +153,7 @@ def test_RgbColorspace_fromColour():
 
     colorspace = colorspaces.RgbColorspace.from_colour_colorspace(
         colour_colorspace,
-        categories=tuple(),
+        categories=[],
         description="test description",
     )
     assert colorspace.description == "test description"
@@ -167,7 +167,7 @@ def test_RgbColorspace_is_no_op():
     else:
         raise AssertionError("Exception not raised.")
 
-    colorspace = colorspaces.RgbColorspace("test null", None, None, None, tuple(), "")
+    colorspace = colorspaces.RgbColorspace("test null", None, None, None, [], "")
     assert colorspace.is_no_op is True
 
     # some test data
@@ -194,7 +194,7 @@ def test_RgbColorspace_is_no_op():
         numpy.array([1 / 3, 1 / 3, 1 / 3]),
     )
 
-    colorspace = colorspaces.RgbColorspace("test null", None, None, None, tuple(), "")
+    colorspace = colorspaces.RgbColorspace("test null", None, None, None, [], "")
     assert colorspace.is_no_op is True
 
     colorspace = colorspaces.RgbColorspace(
@@ -202,7 +202,7 @@ def test_RgbColorspace_is_no_op():
         gamut=None,
         whitepoint=None,
         transfer_functions=None,
-        categories=tuple(),
+        categories=[],
         description="",
     )
     assert colorspace.is_no_op is True
@@ -212,7 +212,7 @@ def test_RgbColorspace_is_no_op():
         gamut=gamut_1,
         whitepoint=None,
         transfer_functions=None,
-        categories=tuple(),
+        categories=[],
         description="",
     )
     assert colorspace.is_no_op is False
@@ -222,7 +222,7 @@ def test_RgbColorspace_is_no_op():
         gamut=None,
         whitepoint=whitepoint,
         transfer_functions=None,
-        categories=tuple(),
+        categories=[],
         description="",
     )
     assert colorspace.is_no_op is False
@@ -232,7 +232,7 @@ def test_RgbColorspace_is_no_op():
         gamut=None,
         whitepoint=None,
         transfer_functions=transfer_functions,
-        categories=tuple(),
+        categories=[],
         description="",
     )
     assert colorspace.is_no_op is False
@@ -242,7 +242,7 @@ def test_RgbColorspace_is_no_op():
         gamut=None,
         whitepoint=None,
         transfer_functions=None,
-        categories=tuple(),
+        categories=[],
         description="",
         matrix_from_XYZ=numpy.identity(3),
         matrix_to_XYZ=numpy.identity(3),
@@ -254,7 +254,7 @@ def test_RgbColorspace_is_no_op():
         gamut=None,
         whitepoint=None,
         transfer_functions=None,
-        categories=tuple(),
+        categories=[],
         description="",
         matrix_from_XYZ=numpy.identity(3) + 0.5,
         matrix_to_XYZ=numpy.identity(3) + 0.5,
@@ -298,7 +298,7 @@ def test_RgbColorspace_matrices():
         gamut=None,
         whitepoint=None,
         transfer_functions=transfer_functions,
-        categories=tuple(),
+        categories=[],
         description="",
     )
     assert colorspace.matrix_to_XYZ is None
@@ -309,7 +309,7 @@ def test_RgbColorspace_matrices():
         gamut=gamut_1,
         whitepoint=None,
         transfer_functions=transfer_functions,
-        categories=tuple(),
+        categories=[],
         description="",
     )
     assert colorspace.matrix_to_XYZ is None
@@ -320,7 +320,7 @@ def test_RgbColorspace_matrices():
         gamut=gamut_1,
         whitepoint=whitepoint,
         transfer_functions=transfer_functions,
-        categories=tuple(),
+        categories=[],
         description="",
     )
     assert colorspace.matrix_to_XYZ is not None
@@ -331,7 +331,7 @@ def test_RgbColorspace_matrices():
         gamut=gamut_1,
         whitepoint=whitepoint,
         transfer_functions=transfer_functions,
-        categories=tuple(),
+        categories=[],
         description="",
         matrix_to_XYZ=matrix_to,
         matrix_from_XYZ=matrix_from,
@@ -368,7 +368,7 @@ def test_RgbColorspace_copy():
         gamut=gamut_1,
         whitepoint=whitepoint,
         transfer_functions=transfer_functions,
-        categories=tuple(),
+        categories=[],
         description="",
     )
 
@@ -421,7 +421,7 @@ def test_RgbColorspace_hashing():
             gamut=gamut_1,
             whitepoint=whitepoint,
             transfer_functions=transfer_functions,
-            categories=tuple(),
+            categories=[],
             description="",
         ),
         colorspaces.RgbColorspace(
@@ -429,7 +429,7 @@ def test_RgbColorspace_hashing():
             gamut=gamut_1,
             whitepoint=whitepoint,
             transfer_functions=transfer_functions,
-            categories=tuple(),
+            categories=[],
             description="",
         ),
     ]
@@ -441,7 +441,7 @@ def test_RgbColorspace_hashing():
             gamut=gamut_1,
             whitepoint=whitepoint,
             transfer_functions=transfer_functions,
-            categories=tuple(),
+            categories=[],
             description="",
         ),
         colorspaces.RgbColorspace(
@@ -449,7 +449,7 @@ def test_RgbColorspace_hashing():
             gamut=gamut_1,
             whitepoint=whitepoint,
             transfer_functions=transfer_functions,
-            categories=tuple(),
+            categories=[],
             description="",
         ),
     ]
@@ -461,7 +461,7 @@ def test_RgbColorspace_hashing():
             gamut=gamut_1,
             whitepoint=whitepoint,
             transfer_functions=transfer_functions,
-            categories=tuple(),
+            categories=[],
             description="",
         ),
         colorspaces.RgbColorspace(
@@ -469,7 +469,7 @@ def test_RgbColorspace_hashing():
             gamut=gamut_1,
             whitepoint=whitepoint,
             transfer_functions=transfer_functions,
-            categories=tuple(),
+            categories=[],
             description="test",
         ),
     ]
@@ -504,7 +504,7 @@ def test_RgbColorspace_get_linear_copy():
         gamut=gamut_1,
         whitepoint=whitepoint,
         transfer_functions=transfer_functions,
-        categories=tuple(),
+        categories=[],
         description="",
     )
 

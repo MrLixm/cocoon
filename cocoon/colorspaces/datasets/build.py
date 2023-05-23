@@ -280,7 +280,7 @@ def _load_colour_colorspaces():
 
         colorspace = RgbColorspace.from_colour_colorspace(
             colour_colorspace_patched,
-            categories=tuple(colorspace_data.get("category", [])),
+            categories=colorspace_data.get("category", []),
         )
 
         aliases = colorspace_data.get("aliases", [])

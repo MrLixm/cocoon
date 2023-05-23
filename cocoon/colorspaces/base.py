@@ -355,7 +355,7 @@ class RgbColorspace(BaseColorspaceComponent):
     def from_colour_colorspace(
         cls,
         colour_colorspace: colour.RGB_Colourspace,
-        categories: tuple[ColorspaceCategory],
+        categories: list[ColorspaceCategory],
         description: Optional[str] = None,
     ):
         gamut = ColorspaceGamut.from_colour_colorspace(colour_colorspace)
