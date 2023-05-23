@@ -78,9 +78,16 @@ def matrix_colorspace_to_colorspace(
 
     if (
         chromatic_adaptation_transform is not None
-        and source_colorspace.whitepoint
-        and target_colorspace.whitepoint
+        and not source_colorspace.whitepoint
+        or not target_colorspace.whitepoint
     ):
+        raise ValueError(
+            f"missing whitepoint on one of the colorspace argument: "
+            f"source_colorspace {source_colorspace.whitepoint}, "
+            f"target_colorspace {target_colorspace.whitepoint}"
+        )
+
+    if chromatic_adaptation_transform is not None:
         M_CAT = matrix_chromatic_adaptation_transform(
             source_colorspace.whitepoint,
             target_colorspace.whitepoint,
@@ -120,9 +127,16 @@ def colorspace_to_XYZ(
 
     if (
         chromatic_adaptation_transform is not None
-        and source_colorspace.whitepoint is not None
-        and whitepoint_XYZ is not None
+        and not source_colorspace.whitepoint
+        or whitepoint_XYZ is None
     ):
+        raise ValueError(
+            f"missing whitepoint on one of the argument: "
+            f"source_colorspace {source_colorspace.whitepoint}, "
+            f"whitepoint_XYZ {whitepoint_XYZ}"
+        )
+
+    if chromatic_adaptation_transform is not None:
         M_CAT = matrix_chromatic_adaptation_transform(
             source_colorspace.whitepoint,
             whitepoint_XYZ,
@@ -150,9 +164,16 @@ def XYZ_to_colorspace(
 
     if (
         chromatic_adaptation_transform is not None
-        and target_colorspace.whitepoint is not None
-        and whitepoint_XYZ is not None
+        and not target_colorspace.whitepoint
+        or whitepoint_XYZ is None
     ):
+        raise ValueError(
+            f"missing whitepoint on one of the argument: "
+            f"target_colorspace {target_colorspace.whitepoint}, "
+            f"whitepoint_XYZ {whitepoint_XYZ}"
+        )
+
+    if chromatic_adaptation_transform is not None:
         M_CAT = matrix_chromatic_adaptation_transform(
             whitepoint_XYZ,
             target_colorspace.whitepoint,
