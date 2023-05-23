@@ -27,11 +27,11 @@ def test_get_colorspace_linear():
     result = colorspaces.get_colorspace("srgb")
     assert result.transfer_functions != colorspaces.TRANSFER_FUNCTIONS_LINEAR
 
-    result = colorspaces.get_colorspace("srgb:linear")
+    result = colorspaces.get_colorspace("srgb", force_linear=True)
     assert result.transfer_functions == colorspaces.TRANSFER_FUNCTIONS_LINEAR
 
     result = colorspaces.get_colorspace("DCI-P3-P")
     assert result.transfer_functions != colorspaces.TRANSFER_FUNCTIONS_LINEAR
 
-    result = colorspaces.get_colorspace("DCI-P3-P:linear")
+    result = colorspaces.get_colorspace("DCI-P3-P", force_linear=True)
     assert result.transfer_functions == colorspaces.TRANSFER_FUNCTIONS_LINEAR

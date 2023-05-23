@@ -59,14 +59,20 @@ def get_available_colorspaces_names_aliases() -> list[tuple[str]]:
     return [tuple(name_tuple) for name_tuple in buffer_dict.values()]
 
 
-def get_colorspace(name: Optional[str]) -> Optional[RgbColorspace]:
+def get_colorspace(
+    name: Optional[str],
+    force_linear: bool = False,
+) -> Optional[RgbColorspace]:
     """
     Retrieve the colour colorspace instance corresponding to the given name.
 
-    You can ask a linear variant of the colorspace by suffixing the name with ``:linear``
+    # TODO is force_linear really necessary ?
 
     Args:
         name: literal name of the colourspace or one of its available alias
+        force_linear:
+            True to return a colorspace with linear transfer-functions. Even if not
+            originally designed with those.
 
     Returns:
         colorspace instance or None if not found.
@@ -74,14 +80,11 @@ def get_colorspace(name: Optional[str]) -> Optional[RgbColorspace]:
     if not name:
         return None
 
-    linear_asked = name.endswith(":linear")
-    name = name.removesuffix(":linear")
-
     colorspace = _COLORSPACES.get(name)
     if not colorspace:
         return None
 
-    if linear_asked:
+    if force_linear:
         colorspace = colorspace.as_linear_copy()
 
     return colorspace
