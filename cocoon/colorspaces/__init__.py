@@ -17,5 +17,5 @@ from .transformations import colorspace_to_colorspace
 from .transformations import matrix_colorspace_to_colorspace
 from .transformations import colorspace_to_XYZ
 from .transformations import XYZ_to_colorspace
-from .transformations import exr_chromaticities_to_colorspace
-from .transformations import colorspace_to_exr_chromaticities
+from .metadata import exr_chromaticities_to_colorspace
+from .metadata import colorspace_to_exr_chromaticities
