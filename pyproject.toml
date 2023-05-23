@@ -1,0 +1,20 @@
+[tool.poetry]
+name = "cocoon"
+version = "0.1.0"
+description = "Colorspace conversion library."
+authors = ["Liam Collod <monsieurlixm@gmail.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = ">=3.9,<3.11"
+colour = { git = "https://github.com/colour-science/colour.git", tag = "v0.4.2" }
+numpy = "*"
+
+[tool.poetry.group.dev.dependencies]
+black = "*"
+pytest = "*"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
