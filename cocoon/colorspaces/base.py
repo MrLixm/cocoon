@@ -11,6 +11,7 @@ __all__ = (
 
 import copy
 import dataclasses
+import functools
 from abc import abstractmethod
 from typing import Callable
 from typing import Optional
@@ -23,7 +24,7 @@ from cocoon.utils import numpy_array2string_oneline
 from cocoon.colorspaces import ColorspaceCategory
 
 
-@dataclasses.dataclass
+@dataclasses.dataclass(frozen=True)
 class BaseColorspaceComponent:
     """
     Every colorspace entity or component will be derived from this class.
@@ -35,9 +36,14 @@ class BaseColorspaceComponent:
 
     name: str
 
-    def __post_init__(self):
-        self.name_simplified = simplify(self.name)
+    @functools.cached_property
+    def name_simplified(self) -> str:
+        """
+        the name attribute but in a more simple syntax for easier typing.
+        """
+        return simplify(self.name)
 
+    @property
     @abstractmethod
     def _tuplerepr(self) -> tuple:
         """
@@ -52,44 +58,31 @@ class BaseColorspaceComponent:
         """
         pass
 
-    def __str__(self):
+    def __str__(self) -> str:
         return f"{self.__class__.__name__}<{self.name} at {hex(id(self))}>"
 
-    def __hash__(self):
-        return hash(self._tuplerepr())
+    def __hash__(self) -> int:
+        return hash(self._tuplerepr)
 
-    def __eq__(self, other):
+    def __eq__(self, other) -> bool:
         if isinstance(other, self.__class__):
-            return self._tuplerepr() == other._tuplerepr()
+            return self._tuplerepr == other._tuplerepr
         return False
 
 
-@dataclasses.dataclass(eq=False)
+@dataclasses.dataclass(eq=False, frozen=True)
 class Whitepoint(BaseColorspaceComponent):
     coordinates: numpy.ndarray
     """
     CIE xy coordinates as a ndarray(2,)
     """
 
-    _coordinates_repr: str = dataclasses.field(init=False, repr=False, default="")
-    """
-    Variable used to cache the repr() of the array to avoid expensive computations
-    every time the instance need to be hashed (via _tuplerepr)
-    """
-
-    def __post_init__(self):
-        self._coordinates_repr = repr(self.coordinates)
-
-    def __setattr__(self, key, value):
-        if key == "coordinates":
-            self._coordinates_repr = repr(value)
-        super().__setattr__(key, value)
-
+    @functools.cached_property
     def _tuplerepr(self):
         return (
             self.__class__.__name__,
             self.name,
-            self._coordinates_repr,
+            repr(self.coordinates),
         )
 
     def to_dict(self) -> dict:
@@ -106,7 +99,7 @@ class Whitepoint(BaseColorspaceComponent):
         )
 
 
-@dataclasses.dataclass(eq=False)
+@dataclasses.dataclass(eq=False, frozen=True)
 class ColorspaceGamut(BaseColorspaceComponent):
     """
     Gamut/Primaries part of a specific colorspace.
@@ -114,25 +107,12 @@ class ColorspaceGamut(BaseColorspaceComponent):
 
     primaries: numpy.ndarray
 
-    _primaries_repr: str = dataclasses.field(init=False, repr=False, default="")
-    """
-    Variable used to cache the repr() of the array to avoid expensive computations
-    every time the instance need to be hashed (via _tuplerepr)
-    """
-
-    def __post_init__(self):
-        self._primaries_repr = repr(self.primaries)
-
-    def __setattr__(self, key, value):
-        if key == "primaries":
-            self._primaries_repr = repr(value)
-        super().__setattr__(key, value)
-
+    @functools.cached_property
     def _tuplerepr(self):
         return (
             self.__class__.__name__,
             self.name,
-            self._primaries_repr,
+            repr(self.primaries),
         )
 
     def to_dict(self) -> dict:
@@ -149,20 +129,18 @@ class ColorspaceGamut(BaseColorspaceComponent):
         )
 
 
-@dataclasses.dataclass(eq=False)
+@dataclasses.dataclass(eq=False, frozen=True)
 class TransferFunctions(BaseColorspaceComponent):
     """
     Transfer functions as decoding and encoding.
 
-    A transfer function might or might not be linear and need to be specified if so.
+    Passing None to one or both of the attribute make them considered linear.
     """
 
     encoding: Optional[Callable]
     decoding: Optional[Callable]
 
-    is_encoding_linear: bool = False
-    is_decoding_linear: bool = False
-
+    @functools.cached_property
     def _tuplerepr(self):
         return (
             self.__class__.__name__,
@@ -173,13 +151,20 @@ class TransferFunctions(BaseColorspaceComponent):
             self.is_decoding_linear,
         )
 
-    def __post_init__(self):
-        super().__post_init__()
+    @functools.cached_property
+    def is_encoding_linear(self):
+        return self.encoding is None
 
-        if self.encoding is None:
-            self.is_encoding_linear = True
-        if self.decoding is None:
-            self.is_decoding_linear = True
+    @functools.cached_property
+    def is_decoding_linear(self):
+        return self.decoding is None
+
+    @functools.cached_property
+    def are_linear(self) -> bool:
+        """
+        Return True if the encoding and decoding are linear transfer-functions.
+        """
+        return self.is_encoding_linear and self.is_decoding_linear
 
     def to_dict(self) -> dict:
         return {
@@ -188,30 +173,28 @@ class TransferFunctions(BaseColorspaceComponent):
             "is_decoding_linear": self.is_decoding_linear,
         }
 
-    @property
-    def are_linear(self) -> bool:
-        """
-        Return True if the encoding and decoding are linear transfer-functions.
-        """
-        return self.is_encoding_linear and self.is_decoding_linear
-
     @classmethod
     def from_colour_colorspace(cls, colour_colorspace: colour.RGB_Colourspace):
+        encoding = None
+        decoding = None
+
+        if colour_colorspace.cctf_encoding != colour.linear_function:
+            encoding = colour_colorspace.cctf_encoding
+
+        if colour_colorspace.cctf_decoding != colour.linear_function:
+            decoding = colour_colorspace.cctf_decoding
+
         return cls(
             name="CCTF " + colour_colorspace.name,
-            encoding=colour_colorspace.cctf_encoding,
-            decoding=colour_colorspace.cctf_decoding,
-            is_encoding_linear=colour_colorspace.cctf_encoding
-            == colour.linear_function,
-            is_decoding_linear=colour_colorspace.cctf_decoding
-            == colour.linear_function,
+            encoding=encoding,
+            decoding=decoding,
         )
 
 
 TRANSFER_FUNCTIONS_LINEAR = TransferFunctions("CCTF Linear", None, None)
 
 
-@dataclasses.dataclass(eq=False)
+@dataclasses.dataclass(eq=False, frozen=True)
 class RgbColorspace(BaseColorspaceComponent):
     """
     Top level entity specifying how a colorspace is defined.
@@ -230,7 +213,7 @@ class RgbColorspace(BaseColorspaceComponent):
     whitepoint: Optional[Whitepoint]
     transfer_functions: Optional[TransferFunctions]
 
-    categories: list[ColorspaceCategory]
+    categories: tuple[ColorspaceCategory, ...]
     """
     To help sort the colorspace in an interface.
     """
@@ -240,31 +223,15 @@ class RgbColorspace(BaseColorspaceComponent):
     A bit more details on what/why for this colorspace.
     """
 
-    matrix_to_XYZ: numpy.ndarray = None
-    matrix_from_XYZ: numpy.ndarray = None
+    matrix_to_XYZ: Optional[numpy.ndarray]
+    matrix_from_XYZ: Optional[numpy.ndarray]
 
     _linear_source: Optional[RgbColorspace] = None
     """
     Initial colorspace this instance was derived from when linearized.
     """
 
-    def __post_init__(self):
-        super().__post_init__()
-        # need a tuple to be hashable
-        self.categories: tuple[ColorspaceCategory] = tuple(self.categories)
-
-        if (
-            self.matrix_to_XYZ is None
-            and self.matrix_from_XYZ is None
-            and self.gamut
-            and self.whitepoint
-        ):
-            self.matrix_to_XYZ: numpy.ndarray = colour.normalised_primary_matrix(
-                primaries=self.gamut.primaries,
-                whitepoint=self.whitepoint.coordinates,
-            )
-            self.matrix_from_XYZ: numpy.ndarray = numpy.linalg.inv(self.matrix_to_XYZ)
-
+    @functools.cached_property
     def _tuplerepr(self) -> tuple:
         return (
             self.__class__.__name__,
@@ -274,9 +241,11 @@ class RgbColorspace(BaseColorspaceComponent):
             self.transfer_functions,
             self.categories,
             self.description,
+            repr(self.matrix_to_XYZ),
+            repr(self.matrix_from_XYZ),
         )
 
-    @property
+    @functools.cached_property
     def is_no_op(self) -> bool:
         """
         Return True if the colorspace should not be processed because it
@@ -335,6 +304,8 @@ class RgbColorspace(BaseColorspaceComponent):
             whitepoint=new_colorspace.whitepoint,
             transfer_functions=TRANSFER_FUNCTIONS_LINEAR,
             categories=new_colorspace.categories,
+            matrix_to_XYZ=new_colorspace.matrix_to_XYZ,
+            matrix_from_XYZ=new_colorspace.matrix_from_XYZ,
             _linear_source=self,
         )
 
@@ -358,6 +329,37 @@ class RgbColorspace(BaseColorspaceComponent):
         }
 
     @classmethod
+    def compute_matrix_to_XYZ_from(cls, gamut, whitepoint) -> numpy.ndarray:
+        """
+        Compute the normalized primary matrix from the given gamut and whitepoint, to XYZ.
+
+        Args:
+            gamut:
+            whitepoint:
+
+        Returns:
+            3x3 matrix
+        """
+        return colour.normalised_primary_matrix(
+            primaries=gamut.primaries,
+            whitepoint=whitepoint.coordinates,
+        )
+
+    @classmethod
+    def compute_matrix_from_XYZ_from(cls, gamut, whitepoint) -> numpy.ndarray:
+        """
+        Compute the normalized primary matrix from the given gamut and whitepoint, from XYZ.
+
+        Args:
+            gamut:
+            whitepoint:
+
+        Returns:
+            3x3 matrix
+        """
+        return numpy.linalg.inv(cls.compute_matrix_to_XYZ_from(gamut, whitepoint))
+
+    @classmethod
     def from_colour_colorspace(
         cls,
         colour_colorspace: colour.RGB_Colourspace,
@@ -374,7 +376,7 @@ class RgbColorspace(BaseColorspaceComponent):
             whitepoint=whitepoint,
             transfer_functions=transfer_functions,
             description=description or colour_colorspace.__doc__,
-            categories=categories,
+            categories=tuple(categories),
             matrix_from_XYZ=colour_colorspace.matrix_XYZ_to_RGB.copy(),
             matrix_to_XYZ=colour_colorspace.matrix_RGB_to_XYZ.copy(),
         )
