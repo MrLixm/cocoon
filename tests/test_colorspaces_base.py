@@ -5,6 +5,68 @@ import numpy.testing
 from cocoon import colorspaces
 
 
+class TestDataAlpha:
+    def __init__(self):
+        self.transfer_functions = colorspaces.TransferFunctions(
+            "CCTF test",
+            encoding=self.temp_encoding,
+            decoding=self.temp_decoding,
+        )
+        self.gamut = colorspaces.ColorspaceGamut(
+            "gamut 1",
+            numpy.array([[0.64, 0.33], [0.3, 0.6], [0.15, 0.06]]),
+        )
+        self.whitepoint = colorspaces.Whitepoint(
+            "test illuminant",
+            numpy.array([1 / 3, 1 / 3, 1 / 3]),
+        )
+        self.matrix_to = colorspaces.RgbColorspace.compute_matrix_to_XYZ_from(
+            self.gamut, self.whitepoint
+        )
+        self.matrix_from = colorspaces.RgbColorspace.compute_matrix_from_XYZ_from(
+            self.gamut, self.whitepoint
+        )
+
+    @staticmethod
+    def temp_decoding(array):
+        return array**2
+
+    @staticmethod
+    def temp_encoding(array):
+        return array**1 / 2
+
+
+class TestDataBeta:
+    def __init__(self):
+        self.transfer_functions = colorspaces.TransferFunctions(
+            "CCTF Beta",
+            encoding=self.temp_encoding,
+            decoding=self.temp_decoding,
+        )
+        self.gamut = colorspaces.ColorspaceGamut(
+            "gamut beta",
+            numpy.array([[0.34, 0.33], [0.366, 0.6], [0.10, 0.06]]),
+        )
+        self.whitepoint = colorspaces.Whitepoint(
+            "illuminant beta",
+            numpy.array([1 / 3.1, 1 / 3.3, 1 / 3]),
+        )
+        self.matrix_to = colorspaces.RgbColorspace.compute_matrix_to_XYZ_from(
+            self.gamut, self.whitepoint
+        )
+        self.matrix_from = colorspaces.RgbColorspace.compute_matrix_from_XYZ_from(
+            self.gamut, self.whitepoint
+        )
+
+    @staticmethod
+    def temp_decoding(array):
+        return array**2.5
+
+    @staticmethod
+    def temp_encoding(array):
+        return array**1 / 2.5
+
+
 def test_Whitepoint():
     # valid for now, see in the future
     whitepoint = colorspaces.Whitepoint("blank", coordinates=[])
@@ -162,28 +224,7 @@ def test_RgbColorspace_is_no_op():
     assert colorspace.is_no_op is True
 
     # some test data
-
-    def temp_decoding_1(array):
-        return array**2
-
-    def temp_encoding_1(array):
-        return array**1 / 2
-
-    transfer_functions = colorspaces.TransferFunctions(
-        "CCTF test",
-        encoding=temp_encoding_1,
-        decoding=temp_decoding_1,
-    )
-
-    gamut_1 = colorspaces.ColorspaceGamut(
-        "gamut 1",
-        numpy.array([[0.64, 0.33], [0.3, 0.6], [0.15, 0.06]]),
-    )
-
-    whitepoint = colorspaces.Whitepoint(
-        "test illuminant",
-        numpy.array([1 / 3, 1 / 3, 1 / 3]),
-    )
+    test_data_alpha = TestDataAlpha()
 
     colorspace = colorspaces.RgbColorspace(
         "test null", None, None, None, tuple(), "", None, None
@@ -204,7 +245,7 @@ def test_RgbColorspace_is_no_op():
 
     colorspace = colorspaces.RgbColorspace(
         "test null",
-        gamut=gamut_1,
+        gamut=test_data_alpha.gamut,
         whitepoint=None,
         transfer_functions=None,
         categories=tuple(),
@@ -217,7 +258,7 @@ def test_RgbColorspace_is_no_op():
     colorspace = colorspaces.RgbColorspace(
         "test null",
         gamut=None,
-        whitepoint=whitepoint,
+        whitepoint=test_data_alpha.whitepoint,
         transfer_functions=None,
         categories=tuple(),
         description="",
@@ -230,7 +271,7 @@ def test_RgbColorspace_is_no_op():
         "test null",
         gamut=None,
         whitepoint=None,
-        transfer_functions=transfer_functions,
+        transfer_functions=test_data_alpha.transfer_functions,
         categories=tuple(),
         description="",
         matrix_from_XYZ=None,
@@ -264,27 +305,7 @@ def test_RgbColorspace_is_no_op():
 
 
 def test_RgbColorspace_matrices():
-    def temp_decoding_1(array):
-        return array**2
-
-    def temp_encoding_1(array):
-        return array**1 / 2
-
-    transfer_functions = colorspaces.TransferFunctions(
-        "CCTF test",
-        encoding=temp_encoding_1,
-        decoding=temp_decoding_1,
-    )
-
-    gamut_1 = colorspaces.ColorspaceGamut(
-        "gamut 1",
-        numpy.array([[0.64, 0.33], [0.3, 0.6], [0.15, 0.06]]),
-    )
-
-    whitepoint = colorspaces.Whitepoint(
-        "test illuminant",
-        numpy.array([1 / 3, 1 / 3, 1 / 3]),
-    )
+    test_data_alpha = TestDataAlpha()
 
     matrix_to = numpy.array(
         [[0.4124, 0.3576, 0.1805], [0.2126, 0.7152, 0.0722], [0.0193, 0.1192, 0.9505]]
@@ -296,9 +317,9 @@ def test_RgbColorspace_matrices():
 
     colorspace = colorspaces.RgbColorspace(
         "test null",
-        gamut=gamut_1,
-        whitepoint=whitepoint,
-        transfer_functions=transfer_functions,
+        gamut=test_data_alpha.gamut,
+        whitepoint=test_data_alpha.whitepoint,
+        transfer_functions=test_data_alpha.transfer_functions,
         categories=tuple(),
         description="",
         matrix_to_XYZ=None,
@@ -309,9 +330,9 @@ def test_RgbColorspace_matrices():
 
     colorspace = colorspaces.RgbColorspace(
         "test null",
-        gamut=gamut_1,
-        whitepoint=whitepoint,
-        transfer_functions=transfer_functions,
+        gamut=test_data_alpha.gamut,
+        whitepoint=test_data_alpha.whitepoint,
+        transfer_functions=test_data_alpha.transfer_functions,
         categories=tuple(),
         description="",
         matrix_to_XYZ=matrix_to,
@@ -322,43 +343,17 @@ def test_RgbColorspace_matrices():
 
 
 def test_RgbColorspace_copy():
-    def temp_decoding_1(array):
-        return array**2
-
-    def temp_encoding_1(array):
-        return array**1 / 2
-
-    transfer_functions = colorspaces.TransferFunctions(
-        "CCTF test",
-        encoding=temp_encoding_1,
-        decoding=temp_decoding_1,
-    )
-
-    gamut_1 = colorspaces.ColorspaceGamut(
-        "gamut 1",
-        numpy.array([[0.64, 0.33], [0.3, 0.6], [0.15, 0.06]]),
-    )
-
-    whitepoint = colorspaces.Whitepoint(
-        "test illuminant",
-        numpy.array([1 / 3, 1 / 3, 1 / 3]),
-    )
-    matrix_to = colorspaces.RgbColorspace.compute_matrix_to_XYZ_from(
-        gamut_1, whitepoint
-    )
-    matrix_from = colorspaces.RgbColorspace.compute_matrix_from_XYZ_from(
-        gamut_1, whitepoint
-    )
+    test_data_alpha = TestDataAlpha()
 
     colorspace = colorspaces.RgbColorspace(
         "test null",
-        gamut=gamut_1,
-        whitepoint=whitepoint,
-        transfer_functions=transfer_functions,
+        gamut=test_data_alpha.gamut,
+        whitepoint=test_data_alpha.whitepoint,
+        transfer_functions=test_data_alpha.transfer_functions,
         categories=tuple(),
         description="",
-        matrix_to_XYZ=matrix_to,
-        matrix_from_XYZ=matrix_from,
+        matrix_to_XYZ=test_data_alpha.matrix_to,
+        matrix_from_XYZ=test_data_alpha.matrix_from,
     )
 
     colorspace_copy = colorspace.copy()
@@ -379,151 +374,102 @@ def test_RgbColorspace_copy():
         colorspace.transfer_functions.encoding
         is colorspace_copy.transfer_functions.encoding
     )
-    assert colorspace_copy.matrix_to_XYZ is not matrix_to
-    assert colorspace_copy.matrix_from_XYZ is not matrix_from
+    assert colorspace_copy.matrix_to_XYZ is not colorspace.matrix_to_XYZ
+    assert colorspace_copy.matrix_from_XYZ is not colorspace.matrix_from_XYZ
 
 
 def test_RgbColorspace_hashing():
-    def temp_decoding_1(array):
-        return array**2
-
-    def temp_encoding_1(array):
-        return array**1 / 2
-
-    transfer_functions = colorspaces.TransferFunctions(
-        "CCTF test",
-        encoding=temp_encoding_1,
-        decoding=temp_decoding_1,
-    )
-
-    gamut_1 = colorspaces.ColorspaceGamut(
-        "gamut 1",
-        numpy.array([[0.64, 0.33], [0.3, 0.6], [0.15, 0.06]]),
-    )
-
-    whitepoint = colorspaces.Whitepoint(
-        "test illuminant",
-        numpy.array([1 / 3, 1 / 3, 1 / 3]),
-    )
-    matrix_to = colorspaces.RgbColorspace.compute_matrix_to_XYZ_from(
-        gamut_1, whitepoint
-    )
-    matrix_from = colorspaces.RgbColorspace.compute_matrix_from_XYZ_from(
-        gamut_1, whitepoint
-    )
+    test_data_alpha = TestDataAlpha()
 
     colorspace_list = [
         colorspaces.RgbColorspace(
             "test A",
-            gamut=gamut_1,
-            whitepoint=whitepoint,
-            transfer_functions=transfer_functions,
+            gamut=test_data_alpha.gamut,
+            whitepoint=test_data_alpha.whitepoint,
+            transfer_functions=test_data_alpha.transfer_functions,
             categories=tuple(),
             description="",
-            matrix_to_XYZ=matrix_to,
-            matrix_from_XYZ=matrix_from,
+            matrix_to_XYZ=test_data_alpha.matrix_to,
+            matrix_from_XYZ=test_data_alpha.matrix_from,
         ),
         colorspaces.RgbColorspace(
             "test A",
-            gamut=gamut_1,
-            whitepoint=whitepoint,
-            transfer_functions=transfer_functions,
+            gamut=test_data_alpha.gamut,
+            whitepoint=test_data_alpha.whitepoint,
+            transfer_functions=test_data_alpha.transfer_functions,
             categories=tuple(),
             description="",
-            matrix_to_XYZ=matrix_to,
-            matrix_from_XYZ=matrix_from,
+            matrix_to_XYZ=test_data_alpha.matrix_to,
+            matrix_from_XYZ=test_data_alpha.matrix_from,
         ),
     ]
     assert len(set(colorspace_list)) == 1
 
-    colorspace_list = [
-        colorspaces.RgbColorspace(
-            "test A",
-            gamut=gamut_1,
-            whitepoint=whitepoint,
-            transfer_functions=transfer_functions,
-            categories=tuple(),
-            description="",
-            matrix_to_XYZ=matrix_to,
-            matrix_from_XYZ=matrix_from,
-        ),
-        colorspaces.RgbColorspace(
-            "test B",
-            gamut=gamut_1,
-            whitepoint=whitepoint,
-            transfer_functions=transfer_functions,
-            categories=tuple(),
-            description="",
-            matrix_to_XYZ=matrix_to,
-            matrix_from_XYZ=matrix_from,
-        ),
-    ]
-    assert len(set(colorspace_list)) == 2
+    test_data_alpha = TestDataAlpha()
 
     colorspace_list = [
         colorspaces.RgbColorspace(
             "test A",
-            gamut=gamut_1,
-            whitepoint=whitepoint,
-            transfer_functions=transfer_functions,
+            gamut=test_data_alpha.gamut,
+            whitepoint=test_data_alpha.whitepoint,
+            transfer_functions=test_data_alpha.transfer_functions,
             categories=tuple(),
             description="",
-            matrix_to_XYZ=matrix_to,
-            matrix_from_XYZ=matrix_from,
+            matrix_to_XYZ=test_data_alpha.matrix_to,
+            matrix_from_XYZ=test_data_alpha.matrix_from,
+        ),
+        colorspaces.RgbColorspace(
+            "test B",
+            gamut=test_data_alpha.gamut,
+            whitepoint=test_data_alpha.whitepoint,
+            transfer_functions=test_data_alpha.transfer_functions,
+            categories=tuple(),
+            description="",
+            matrix_to_XYZ=test_data_alpha.matrix_to,
+            matrix_from_XYZ=test_data_alpha.matrix_from,
+        ),
+    ]
+    assert len(set(colorspace_list)) == 2
+
+    test_data_alpha = TestDataAlpha()
+
+    colorspace_list = [
+        colorspaces.RgbColorspace(
+            "test A",
+            gamut=test_data_alpha.gamut,
+            whitepoint=test_data_alpha.whitepoint,
+            transfer_functions=test_data_alpha.transfer_functions,
+            categories=tuple(),
+            description="",
+            matrix_to_XYZ=test_data_alpha.matrix_to,
+            matrix_from_XYZ=test_data_alpha.matrix_from,
         ),
         colorspaces.RgbColorspace(
             "test A",
-            gamut=gamut_1,
-            whitepoint=whitepoint,
-            transfer_functions=transfer_functions,
+            gamut=test_data_alpha.gamut,
+            whitepoint=test_data_alpha.whitepoint,
+            transfer_functions=test_data_alpha.transfer_functions,
             categories=tuple(),
             description="test",
-            matrix_to_XYZ=matrix_to,
-            matrix_from_XYZ=matrix_from,
+            matrix_to_XYZ=test_data_alpha.matrix_to,
+            matrix_from_XYZ=test_data_alpha.matrix_from,
         ),
     ]
     assert len(set(colorspace_list)) == 2
 
 
 def test_RgbColorspace_get_linear_copy():
-    def temp_decoding_1(array):
-        return array**2
-
-    def temp_encoding_1(array):
-        return array**1 / 2
-
-    transfer_functions = colorspaces.TransferFunctions(
-        "CCTF test",
-        encoding=temp_encoding_1,
-        decoding=temp_decoding_1,
-    )
-
-    gamut_1 = colorspaces.ColorspaceGamut(
-        "gamut 1",
-        numpy.array([[0.64, 0.33], [0.3, 0.6], [0.15, 0.06]]),
-    )
-
-    whitepoint = colorspaces.Whitepoint(
-        "test illuminant",
-        numpy.array([1 / 3, 1 / 3, 1 / 3]),
-    )
-
-    matrix_to = colorspaces.RgbColorspace.compute_matrix_to_XYZ_from(
-        gamut_1, whitepoint
-    )
-    matrix_from = colorspaces.RgbColorspace.compute_matrix_from_XYZ_from(
-        gamut_1, whitepoint
-    )
+    test_data_alpha = TestDataAlpha()
 
     colorspace = colorspaces.RgbColorspace(
         "test null",
-        gamut=gamut_1,
-        whitepoint=whitepoint,
-        transfer_functions=transfer_functions,
+        gamut=test_data_alpha.gamut,
+        whitepoint=test_data_alpha.whitepoint,
+        transfer_functions=test_data_alpha.transfer_functions,
         categories=tuple(),
         description="",
-        matrix_to_XYZ=matrix_to,
-        matrix_from_XYZ=matrix_from,
+        matrix_to_XYZ=test_data_alpha.matrix_to,
+        matrix_from_XYZ=test_data_alpha.matrix_from,
     )
 
     assert colorspace.is_linear_copy is False
