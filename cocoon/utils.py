@@ -2,13 +2,15 @@ __all__ = (
     "numpy_array2string_oneline",
     "simplify",
     "split_at_words",
+    "lru_cache",
 )
 
-
+import functools
 import re
+from copy import deepcopy
+
 import unicodedata
-from typing import Any, Optional, Literal
-from typing import Sequence
+from typing import Any
 
 import numpy
 
@@ -97,3 +99,33 @@ def numpy_array2string_oneline(array: numpy.ndarray) -> str:
     Convert the given numpy array to a one line readable string.
     """
     return numpy.array2string(array, separator=",").replace("\n", "")
+
+
+def lru_cache(maxsize=128, typed=False, copy=False):
+    """
+    Same as functools.lru_cache but can return unique instances.
+
+    Args:
+        maxsize:
+            If is set to None, the LRU features are disabled and the cache can grow without bound.
+        typed:
+            If True, arguments of different types will be cached separately.
+            For example, f(3.0) and f(3) will be treated as distinct calls with distinct results
+        copy: If True return a deepcopy of the cached object
+
+    References:
+        - [1] https://stackoverflow.com/q/54909357/13806195
+    """
+    if not copy:
+        return functools.lru_cache(maxsize, typed)
+
+    def decorator(func):
+        cached_func = functools.lru_cache(maxsize, typed)(func)
+
+        @functools.wraps(func)
+        def wrapper(*args, **kwargs):
+            return deepcopy(cached_func(*args, **kwargs))
+
+        return wrapper
+
+    return decorator

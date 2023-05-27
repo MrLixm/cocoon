@@ -6,18 +6,18 @@ __all__ = (
     "XYZ_to_colorspace",
 )
 
-import functools
 from typing import Optional
 
 import colour
 import numpy
 
+from cocoon.utils import lru_cache
 from cocoon.colorspaces import RgbColorspace
 from cocoon.colorspaces import Whitepoint
 from cocoon.colorspaces import ChromaticAdaptationTransform
 
 
-@functools.lru_cache
+@lru_cache(copy=True)
 def matrix_chromatic_adaptation_transform(
     source_whitepoint: Whitepoint,
     target_whitepoint: Whitepoint,
