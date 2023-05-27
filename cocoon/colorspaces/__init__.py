@@ -15,6 +15,7 @@ from .datasets import sRGB_COLORSPACE
 from .datasets import sRGB_LINEAR_COLORSPACE
 from .transformations import colorspace_to_colorspace
 from .transformations import matrix_colorspace_to_colorspace
+from .transformations import matrix_chromatic_adaptation_transform
 from .transformations import colorspace_to_XYZ
 from .transformations import XYZ_to_colorspace
 from .metadata import exr_chromaticities_to_colorspace

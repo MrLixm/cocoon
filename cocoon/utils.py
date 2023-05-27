@@ -8,6 +8,8 @@ __all__ = (
 import functools
 import re
 from copy import deepcopy
+from typing import Callable
+from typing import TypeVar
 
 import unicodedata
 from typing import Any
@@ -101,7 +103,16 @@ def numpy_array2string_oneline(array: numpy.ndarray) -> str:
     return numpy.array2string(array, separator=",").replace("\n", "")
 
 
-def lru_cache(maxsize=128, typed=False, copy=False):
+def typabledecorator(decorator: Callable) -> Callable:
+    """
+    Allow type hinting and auto-completion to work properly with function inteded
+    to be used as decorator.
+    """
+    return decorator
+
+
+@typabledecorator
+def lru_cache(maxsize: int = 128, typed: bool = False, copy: bool = False):
     """
     Same as functools.lru_cache but can return unique instances.
 

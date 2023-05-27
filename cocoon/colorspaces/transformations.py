@@ -22,7 +22,7 @@ def matrix_chromatic_adaptation_transform(
     source_whitepoint: Whitepoint,
     target_whitepoint: Whitepoint,
     transform_name: ChromaticAdaptationTransform,
-):
+) -> numpy.ndarray:
     """
     Return the 3x3 matrix to convert the given illuminant to teh target illuminant
     using the given transform name.

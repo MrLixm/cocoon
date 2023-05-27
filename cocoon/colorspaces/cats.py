@@ -10,6 +10,8 @@ logger = logging.getLogger(__name__)
 
 
 class ChromaticAdaptationTransform(enum.Enum):
+    # values can only be ones supported by ``colour``
+    # >>> print("\n".join(colour.CHROMATIC_ADAPTATION_TRANSFORMS))
     bianco_2010 = "Bianco 2010"
     bianco_pc_2010 = "Bianco PC 2010"
     bradford = "Bradford"

@@ -92,7 +92,9 @@ class Whitepoint(BaseColorspaceComponent):
         }
 
     @classmethod
-    def from_colour_colorspace(cls, colour_colorspace: colour.RGB_Colourspace):
+    def from_colour_colorspace(
+        cls, colour_colorspace: colour.RGB_Colourspace
+    ) -> Whitepoint:
         return cls(
             colour_colorspace.whitepoint_name,
             colour_colorspace.whitepoint.copy(),
@@ -122,7 +124,9 @@ class ColorspaceGamut(BaseColorspaceComponent):
         }
 
     @classmethod
-    def from_colour_colorspace(cls, colour_colorspace: colour.RGB_Colourspace):
+    def from_colour_colorspace(
+        cls, colour_colorspace: colour.RGB_Colourspace
+    ) -> ColorspaceGamut:
         return cls(
             "Gamut " + colour_colorspace.name,
             colour_colorspace.primaries,
@@ -152,11 +156,11 @@ class TransferFunctions(BaseColorspaceComponent):
         )
 
     @functools.cached_property
-    def is_encoding_linear(self):
+    def is_encoding_linear(self) -> bool:
         return self.encoding is None
 
     @functools.cached_property
-    def is_decoding_linear(self):
+    def is_decoding_linear(self) -> bool:
         return self.decoding is None
 
     @functools.cached_property
@@ -174,7 +178,9 @@ class TransferFunctions(BaseColorspaceComponent):
         }
 
     @classmethod
-    def from_colour_colorspace(cls, colour_colorspace: colour.RGB_Colourspace):
+    def from_colour_colorspace(
+        cls, colour_colorspace: colour.RGB_Colourspace
+    ) -> TransferFunctions:
         encoding = None
         decoding = None
 
@@ -510,7 +516,7 @@ class RgbColorspace(BaseColorspaceComponent):
         colour_colorspace: colour.RGB_Colourspace,
         categories: list[ColorspaceCategory],
         description: Optional[str] = None,
-    ):
+    ) -> RgbColorspace:
         gamut = ColorspaceGamut.from_colour_colorspace(colour_colorspace)
         whitepoint = Whitepoint.from_colour_colorspace(colour_colorspace)
         transfer_functions = TransferFunctions.from_colour_colorspace(colour_colorspace)
