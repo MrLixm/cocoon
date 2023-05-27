@@ -328,6 +328,151 @@ class RgbColorspace(BaseColorspaceComponent):
             },
         }
 
+    def with_derived_matrices(self) -> RgbColorspace:
+        """
+        Return a copy of this instance but the XYZ conversion matrices derived
+        from the gamut and whitepoint.
+
+        Note that they might still be None if gamut and whitepoint are not defined.
+        """
+        if not self.gamut or not self.whitepoint:
+            return self.with_gamut(self.gamut, None, None)
+
+        matrix_to_XYZ = self.compute_matrix_to_XYZ_from(self.gamut, self.whitepoint)
+        matrix_from_XYZ = self.compute_matrix_from_XYZ_from(self.gamut, self.whitepoint)
+        return self.with_gamut(
+            new_gamut=self.gamut,
+            matrix_to_XYZ=matrix_to_XYZ,
+            matrix_from_XYZ=matrix_from_XYZ,
+        )
+
+    def with_descriptives(
+        self,
+        new_name: Optional[str] = None,
+        new_description: Optional[str] = None,
+        new_categories: Optional[tuple[ColorspaceCategory, ...]] = None,
+    ) -> RgbColorspace:
+        """
+        Return this instance with the given "descriptive" attribute modified.
+
+        If the attribute is None, use the current one on this instance.
+
+        Args:
+            new_name: None to use the current instance one
+            new_description: None to use the current instance one
+            new_categories: None to use the current instance one
+
+        Returns:
+            new instance
+        """
+        new_colorspace = self.copy()
+        new_name = new_name or new_colorspace.name
+        new_description = new_description or new_colorspace.description
+        new_categories = (
+            new_categories if new_categories is not None else new_colorspace.categories
+        )
+        return RgbColorspace(
+            name=new_name,
+            categories=new_categories,
+            description=new_description,
+            gamut=new_colorspace.gamut,
+            whitepoint=new_colorspace.whitepoint,
+            transfer_functions=new_colorspace.transfer_functions,
+            matrix_to_XYZ=new_colorspace.matrix_to_XYZ,
+            matrix_from_XYZ=new_colorspace.matrix_from_XYZ,
+            _linear_source=new_colorspace._linear_source,
+        )
+
+    def with_gamut(
+        self,
+        new_gamut: Optional[ColorspaceGamut],
+        matrix_to_XYZ: Optional[numpy.ndarray],
+        matrix_from_XYZ: Optional[numpy.ndarray],
+    ) -> RgbColorspace:
+        """
+        Return a copy of this instance with the given gamut set.
+
+        Changing the gamut means teh matrices need to be provided again.
+        Tip: You can just pass None for matrices and call :meth:`with_derived_matrices`
+        after.
+
+        Args:
+            new_gamut:
+            matrix_to_XYZ:
+            matrix_from_XYZ:
+
+        Returns:
+            new object
+        """
+        new_colorspace = self.copy()
+        return RgbColorspace(
+            name=new_colorspace.name,
+            gamut=new_gamut,
+            whitepoint=new_colorspace.whitepoint,
+            transfer_functions=new_colorspace.transfer_functions,
+            categories=new_colorspace.categories,
+            description=new_colorspace.description,
+            matrix_to_XYZ=matrix_to_XYZ,
+            matrix_from_XYZ=matrix_from_XYZ,
+            _linear_source=new_colorspace._linear_source,
+        )
+
+    def with_transfer_functions(
+        self,
+        new_transfer_functions: Optional[TransferFunctions],
+    ) -> RgbColorspace:
+        """
+        Return a copy of this instance with the given whitepoint set.
+
+        Args:
+            new_transfer_functions:
+
+        Returns:
+            new object
+        """
+        new_colorspace = self.copy()
+        return RgbColorspace(
+            name=new_colorspace.name,
+            gamut=new_colorspace.gamut,
+            whitepoint=new_colorspace.whitepoint,
+            transfer_functions=new_transfer_functions,
+            categories=new_colorspace.categories,
+            description=new_colorspace.description,
+            matrix_to_XYZ=new_colorspace.matrix_to_XYZ,
+            matrix_from_XYZ=new_colorspace.matrix_from_XYZ,
+            _linear_source=new_colorspace._linear_source,
+        )
+
+    def with_whitepoint(
+        self,
+        new_whitepoint: Optional[Whitepoint],
+        matrix_to_XYZ: Optional[numpy.ndarray],
+        matrix_from_XYZ: Optional[numpy.ndarray],
+    ) -> RgbColorspace:
+        """
+        Return a copy of this instance with the given whitepoint set.
+
+        Args:
+            new_whitepoint:
+            matrix_to_XYZ:
+            matrix_from_XYZ:
+
+        Returns:
+            new object
+        """
+        new_colorspace = self.copy()
+        return RgbColorspace(
+            name=new_colorspace.name,
+            gamut=new_colorspace.gamut,
+            whitepoint=new_whitepoint,
+            transfer_functions=new_colorspace.transfer_functions,
+            categories=new_colorspace.categories,
+            description=new_colorspace.description,
+            matrix_to_XYZ=matrix_to_XYZ,
+            matrix_from_XYZ=matrix_from_XYZ,
+            _linear_source=new_colorspace._linear_source,
+        )
+
     @classmethod
     def compute_matrix_to_XYZ_from(cls, gamut, whitepoint) -> numpy.ndarray:
         """

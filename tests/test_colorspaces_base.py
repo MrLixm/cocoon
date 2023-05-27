@@ -487,3 +487,92 @@ def test_RgbColorspace_get_linear_copy():
     assert linear_colorspace_2.retrieve_linear_source() == colorspace
     # we made a deepcopy
     assert linear_colorspace_2.retrieve_linear_source() is not colorspace
+
+
+def test_with():
+    test_data_alpha = TestDataAlpha()
+    test_data_beta = TestDataBeta()
+
+    colorspace = colorspaces.RgbColorspace(
+        "test A",
+        gamut=test_data_alpha.gamut,
+        whitepoint=test_data_alpha.whitepoint,
+        transfer_functions=test_data_alpha.transfer_functions,
+        categories=tuple(),
+        description="",
+        matrix_to_XYZ=test_data_alpha.matrix_to,
+        matrix_from_XYZ=test_data_alpha.matrix_from,
+    )
+    new_colorspace = colorspace.with_gamut(
+        test_data_beta.gamut,
+        test_data_beta.matrix_to,
+        test_data_beta.matrix_from,
+    )
+    assert colorspace.name == new_colorspace.name
+    assert colorspace.gamut is not new_colorspace.gamut
+    assert colorspace.gamut != new_colorspace.gamut
+    assert new_colorspace.gamut is test_data_beta.gamut
+    assert colorspace.whitepoint is not new_colorspace.whitepoint
+    assert colorspace.whitepoint == new_colorspace.whitepoint
+    assert not numpy.array_equal(
+        colorspace.matrix_from_XYZ,
+        new_colorspace.matrix_from_XYZ,
+    )
+    assert not numpy.array_equal(
+        colorspace.matrix_to_XYZ,
+        new_colorspace.matrix_to_XYZ,
+    )
+
+    new_colorspace = colorspace.with_gamut(test_data_beta.gamut, None, None)
+    assert colorspace.name == new_colorspace.name
+    assert new_colorspace.matrix_to_XYZ is None
+    assert new_colorspace.matrix_from_XYZ is None
+
+    new_colorspace = new_colorspace.with_derived_matrices()
+    assert colorspace.name == new_colorspace.name
+    assert new_colorspace.matrix_to_XYZ is not None
+    assert new_colorspace.matrix_from_XYZ is not None
+
+    new_colorspace = colorspace.with_whitepoint(test_data_beta.whitepoint, None, None)
+    assert colorspace.name == new_colorspace.name
+    assert new_colorspace.matrix_to_XYZ is None
+    assert new_colorspace.matrix_from_XYZ is None
+    assert colorspace.whitepoint is not new_colorspace.whitepoint
+    assert new_colorspace.whitepoint is test_data_beta.whitepoint
+
+    new_colorspace = colorspace.with_transfer_functions(
+        test_data_beta.transfer_functions
+    )
+    assert colorspace.name == new_colorspace.name
+    assert colorspace.gamut == new_colorspace.gamut
+    assert colorspace.whitepoint == new_colorspace.whitepoint
+    assert new_colorspace.transfer_functions is test_data_beta.transfer_functions
+
+    new_colorspace = colorspace.with_descriptives()
+    assert colorspace == new_colorspace
+
+    new_colorspace = colorspace.with_descriptives(new_name="NEWNAME")
+    assert colorspace != new_colorspace
+    assert new_colorspace.name == "NEWNAME"
+    assert new_colorspace.description == colorspace.description
+    assert new_colorspace.categories == colorspace.categories
+
+    new_colorspace = colorspace.with_descriptives(
+        new_name="NEWNAME", new_description="NEWDESC"
+    )
+    assert colorspace != new_colorspace
+    assert new_colorspace.name == "NEWNAME"
+    assert new_colorspace.description == "NEWDESC"
+    assert new_colorspace.categories == colorspace.categories
+
+    new_categories = (colorspaces.ColorspaceCategory.aces,)
+    new_colorspace = colorspace.with_descriptives(
+        new_name="NEWNAME",
+        new_description="NEWDESC",
+        new_categories=new_categories,
+    )
+    assert colorspace != new_colorspace
+    assert new_colorspace.name == "NEWNAME"
+    assert new_colorspace.description == "NEWDESC"
+    assert new_colorspace.categories == new_categories
+    assert new_colorspace.categories is new_categories
