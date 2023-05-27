@@ -111,6 +111,11 @@ def colorspace_to_XYZ(
     if source_colorspace.is_no_op or source_colorspace.gamut is None:
         return array.copy()
 
+    if source_colorspace.matrix_to_XYZ is None:
+        raise ValueError(
+            f"source_colorspace doesn't define any matrix_to_XYZ: {source_colorspace}"
+        )
+
     RGB = colour.utilities.to_domain_1(array)
 
     if (
@@ -129,8 +134,8 @@ def colorspace_to_XYZ(
     ):
         raise ValueError(
             f"missing whitepoint on one of the argument: "
-            f"source_colorspace {source_colorspace.whitepoint}, "
-            f"whitepoint_XYZ {whitepoint_XYZ}"
+            f"source_colorspace={source_colorspace.whitepoint}, "
+            f"whitepoint_XYZ={whitepoint_XYZ}"
         )
 
     if chromatic_adaptation_transform is not None:
@@ -157,6 +162,11 @@ def XYZ_to_colorspace(
     if target_colorspace.is_no_op or target_colorspace.gamut is None:
         return array.copy()
 
+    if target_colorspace.matrix_from_XYZ is None:
+        raise ValueError(
+            f"target_colorspace doesn't define any matrix_from_XYZ: {target_colorspace}"
+        )
+
     XYZ = array
 
     if (
@@ -166,8 +176,8 @@ def XYZ_to_colorspace(
     ):
         raise ValueError(
             f"missing whitepoint on one of the argument: "
-            f"target_colorspace {target_colorspace.whitepoint}, "
-            f"whitepoint_XYZ {whitepoint_XYZ}"
+            f"target_colorspace={target_colorspace.whitepoint}, "
+            f"whitepoint_XYZ={whitepoint_XYZ}"
         )
 
     if chromatic_adaptation_transform is not None:
