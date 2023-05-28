@@ -318,6 +318,28 @@ class RgbColorspace(BaseColorspaceComponent):
             _linear_source=self,
         )
 
+    def as_colour_colorspace(self) -> colour.RGB_Colourspace:
+        """
+        Convert to a colour supported class instance.
+        """
+        if not self.gamut:
+            raise ValueError("Gamut is required for conversion.")
+        if not self.whitepoint:
+            raise ValueError("Whitepoint is required for conversion.")
+
+        return colour.RGB_Colourspace(
+            name=self.name,
+            primaries=self.gamut.primaries.copy(),
+            whitepoint=self.whitepoint.coordinates.copy(),
+            whitepoint_name=self.whitepoint.name,
+            matrix_RGB_to_XYZ=self.matrix_to_XYZ.copy(),
+            matrix_XYZ_to_RGB=self.matrix_from_XYZ.copy(),
+            cctf_encoding=self.transfer_functions.encoding,
+            cctf_decoding=self.transfer_functions.decoding,
+            use_derived_matrix_RGB_to_XYZ=self._matrix_to_XYZ_derived,
+            use_derived_matrix_XYZ_to_RGB=self._matrix_from_XYZ_derived,
+        )
+
     def retrieve_linear_source(self) -> Optional[RgbColorspace]:
         """
         The non-linear colorspace this linear instance was derived from. Else None
