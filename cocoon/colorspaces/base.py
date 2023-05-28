@@ -237,6 +237,9 @@ class RgbColorspace(BaseColorspaceComponent):
     Initial colorspace this instance was derived from when linearized.
     """
 
+    _matrix_to_XYZ_derived: bool = False
+    _matrix_from_XYZ_derived: bool = False
+
     @functools.cached_property
     def _tuplerepr(self) -> tuple:
         return (
@@ -346,10 +349,20 @@ class RgbColorspace(BaseColorspaceComponent):
 
         matrix_to_XYZ = self.compute_matrix_to_XYZ_from(self.gamut, self.whitepoint)
         matrix_from_XYZ = self.compute_matrix_from_XYZ_from(self.gamut, self.whitepoint)
-        return self.with_gamut(
-            new_gamut=self.gamut,
+        new_colorspace = self.copy()
+
+        return RgbColorspace(
+            name=new_colorspace.name,
+            gamut=new_colorspace.gamut,
+            whitepoint=new_colorspace.whitepoint,
+            transfer_functions=new_colorspace.transfer_functions,
+            categories=new_colorspace.categories,
+            description=new_colorspace.description,
             matrix_to_XYZ=matrix_to_XYZ,
             matrix_from_XYZ=matrix_from_XYZ,
+            _linear_source=new_colorspace._linear_source,
+            _matrix_to_XYZ_derived=True,
+            _matrix_from_XYZ_derived=True,
         )
 
     def with_descriptives(
@@ -530,4 +543,6 @@ class RgbColorspace(BaseColorspaceComponent):
             categories=tuple(categories),
             matrix_from_XYZ=colour_colorspace.matrix_XYZ_to_RGB.copy(),
             matrix_to_XYZ=colour_colorspace.matrix_RGB_to_XYZ.copy(),
+            _matrix_to_XYZ_derived=colour_colorspace.use_derived_matrix_RGB_to_XYZ,
+            _matrix_from_XYZ_derived=colour_colorspace.use_derived_matrix_XYZ_to_RGB,
         )
