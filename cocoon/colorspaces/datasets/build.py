@@ -276,6 +276,7 @@ def _load_colour_colorspaces():
             )
             continue
 
+        colour_colorspace = colour_colorspace.copy()
         colour_colorspace_patched = _patch_colour_colorspace(colour_colorspace)
 
         colorspace = RgbColorspace.from_colour_colorspace(
