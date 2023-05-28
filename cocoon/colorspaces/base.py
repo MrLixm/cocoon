@@ -334,8 +334,8 @@ class RgbColorspace(BaseColorspaceComponent):
             whitepoint_name=self.whitepoint.name,
             matrix_RGB_to_XYZ=self.matrix_to_XYZ.copy(),
             matrix_XYZ_to_RGB=self.matrix_from_XYZ.copy(),
-            cctf_encoding=self.transfer_functions.encoding,
-            cctf_decoding=self.transfer_functions.decoding,
+            cctf_encoding=self.transfer_functions.encoding or colour.linear_function,
+            cctf_decoding=self.transfer_functions.decoding or colour.linear_function,
             use_derived_matrix_RGB_to_XYZ=self._matrix_to_XYZ_derived,
             use_derived_matrix_XYZ_to_RGB=self._matrix_from_XYZ_derived,
         )

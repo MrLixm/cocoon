@@ -580,57 +580,59 @@ def test_with():
 
 
 def test_as_colour_colorspace():
-    srgb_colorspace: colour.RGB_Colourspace = colour.RGB_COLOURSPACES["sRGB"]
-    srgb_colorspace.use_derived_transformation_matrices(True)
-    colorspace = colorspaces.RgbColorspace.from_colour_colorspace(
-        srgb_colorspace,
-        categories=list(),
-        description=srgb_colorspace.__doc__,
-    )
-    result_colorspace = colorspace.as_colour_colorspace()
+    for test_colorspace in ["sRGB", "ACEScg"]:
+        src_colorspace: colour.RGB_Colourspace
+        src_colorspace = colour.RGB_COLOURSPACES[test_colorspace]
+        src_colorspace.use_derived_transformation_matrices(True)
+        colorspace = colorspaces.RgbColorspace.from_colour_colorspace(
+            src_colorspace,
+            categories=list(),
+            description=src_colorspace.__doc__,
+        )
+        result_colorspace = colorspace.as_colour_colorspace()
 
-    result = result_colorspace.name
-    expected = srgb_colorspace.name
-    assert result == expected
+        result = result_colorspace.name
+        expected = src_colorspace.name
+        assert result == expected
 
-    result = result_colorspace.primaries
-    expected = srgb_colorspace.primaries
-    assert numpy.array_equal(result, expected)
+        result = result_colorspace.primaries
+        expected = src_colorspace.primaries
+        assert numpy.array_equal(result, expected)
 
-    result = result_colorspace.whitepoint
-    expected = srgb_colorspace.whitepoint
-    assert numpy.array_equal(result, expected)
+        result = result_colorspace.whitepoint
+        expected = src_colorspace.whitepoint
+        assert numpy.array_equal(result, expected)
 
-    result = result_colorspace.whitepoint_name
-    expected = srgb_colorspace.whitepoint_name
-    assert result == expected
+        result = result_colorspace.whitepoint_name
+        expected = src_colorspace.whitepoint_name
+        assert result == expected
 
-    result = result_colorspace.matrix_RGB_to_XYZ
-    expected = srgb_colorspace.matrix_RGB_to_XYZ
-    assert numpy.array_equal(result, expected)
+        result = result_colorspace.matrix_RGB_to_XYZ
+        expected = src_colorspace.matrix_RGB_to_XYZ
+        assert numpy.array_equal(result, expected)
 
-    result = result_colorspace.matrix_XYZ_to_RGB
-    expected = srgb_colorspace.matrix_XYZ_to_RGB
-    assert numpy.array_equal(result, expected)
+        result = result_colorspace.matrix_XYZ_to_RGB
+        expected = src_colorspace.matrix_XYZ_to_RGB
+        assert numpy.array_equal(result, expected)
 
-    result = result_colorspace.cctf_encoding
-    expected = srgb_colorspace.cctf_encoding
-    assert result == expected
+        result = result_colorspace.cctf_encoding
+        expected = src_colorspace.cctf_encoding
+        assert result == expected
 
-    result = result_colorspace.cctf_decoding
-    expected = srgb_colorspace.cctf_decoding
-    assert result == expected
+        result = result_colorspace.cctf_decoding
+        expected = src_colorspace.cctf_decoding
+        assert result == expected
 
-    result = result_colorspace.use_derived_matrix_RGB_to_XYZ
-    expected = srgb_colorspace.use_derived_matrix_RGB_to_XYZ
-    assert result == expected
+        result = result_colorspace.use_derived_matrix_RGB_to_XYZ
+        expected = src_colorspace.use_derived_matrix_RGB_to_XYZ
+        assert result == expected
 
-    result = result_colorspace.use_derived_matrix_XYZ_to_RGB
-    expected = srgb_colorspace.use_derived_matrix_XYZ_to_RGB
-    assert result == expected
+        result = result_colorspace.use_derived_matrix_XYZ_to_RGB
+        expected = src_colorspace.use_derived_matrix_XYZ_to_RGB
+        assert result == expected
 
-    assert result_colorspace.primaries is not colorspace.gamut.primaries
-    assert result_colorspace.whitepoint is not colorspace.whitepoint.coordinates
+        assert result_colorspace.primaries is not colorspace.gamut.primaries
+        assert result_colorspace.whitepoint is not colorspace.whitepoint.coordinates
 
     raw_colorspace = colorspaces.get_colorspace("raw")
 
