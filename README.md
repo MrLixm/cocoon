@@ -1,6 +1,6 @@
 # cocoon
 
-Python **co**lorspace **co(o)n**version library.
+Python **co**lorspace **co(o)n**version and color manipulation library.
 
 Mostly wrap [colour](https://github.com/colour-science/colour) to provide a
 different interface.
@@ -17,7 +17,10 @@ building python software.
 Cocoon vastly depends on [colour](https://github.com/colour-science/colour)
 and wrap its existing API to provide a different way to interract with colorspaces.
 
-## difference with colors
+Cocoon also provide object to make the manipulation of colors easier, as converting
+between different color models or encodings.
+
+## difference with colors for color-management
 
 - Monolithic RGB_Colorspace class split in multiple classes (called ColorspaceComponent) :
   - `Whitepoint` class
@@ -40,7 +43,7 @@ of using a global dict object.
 
 the cooon specific `RgbColorspace` class can be converted to and from a `colour.RGB_Colorspace` instance.
 
-## issues
+### issues implied
 
 - an update on the colour library require an update on the cocoon side (example: new colorspace added)
 - cocoon `RgbColorspace` class design allow multiple attributes to be `None` which usually
