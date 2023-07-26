@@ -15,8 +15,8 @@ from cocoon import RgbColorspace
 from cocoon import sRGB_COLORSPACE
 from cocoon import colorspace_to_colorspace
 from cocoon import ChromaticAdaptationTransform
-from ._bitdepth import convert_int8_to_float
-from ._bitdepth import convert_float_to_int8
+from ._encodings import convert_int8_to_float
+from ._encodings import convert_float_to_int8
 
 logger = logging.getLogger(__name__)
 
