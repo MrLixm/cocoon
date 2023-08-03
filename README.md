@@ -5,7 +5,8 @@ Python **co**lorspace **co(o)n**version and color manipulation library.
 Mostly wrap [colour](https://github.com/colour-science/colour) to provide a
 different interface.
 
-> **Warning** cocoon is a personal experimental project, shared without any
+> [!WARNING] 
+> cocoon is a personal experimental project, shared without any
 > guarantee. It is not aimed to be widely used and maintained out of my personal scope.
 > API can break at any time.
 
