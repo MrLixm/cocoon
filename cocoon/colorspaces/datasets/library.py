@@ -6,7 +6,7 @@ __all__ = (
 )
 
 from cocoon.colorspaces.datasets.browse import get_colorspace
-from cocoon.colorspaces.datasets.build import _COLORSPACE_POINTER_GAMUT_NAME
+from cocoon.colorspaces.datasets._build import _COLORSPACE_POINTER_GAMUT_NAME
 
 
 POINTER_GAMUT_COLORSPACE = get_colorspace(_COLORSPACE_POINTER_GAMUT_NAME)

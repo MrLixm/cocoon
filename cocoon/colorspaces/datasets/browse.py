@@ -8,7 +8,7 @@ __all__ = (
 from typing import Optional
 
 from cocoon.colorspaces import RgbColorspace
-from cocoon.colorspaces.datasets.build import _COLORSPACES
+from cocoon.colorspaces.datasets._build import _COLORSPACES
 
 
 def get_available_colorspaces() -> list[RgbColorspace]:

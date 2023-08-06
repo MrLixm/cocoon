@@ -1,4 +1,4 @@
-from .build import _load_colorspaces
+from ._build import _load_colorspaces
 
 _load_colorspaces()
 
