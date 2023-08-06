@@ -1,6 +1,6 @@
-from ._build import _load_colorspaces
+from ._build import load_colorspaces
 
-_load_colorspaces()
+load_colorspaces()
 
 from .browse import get_available_colorspaces
 from .browse import get_available_colorspaces_names

@@ -290,7 +290,7 @@ def _load_colour_colorspaces():
     return
 
 
-def _load_colorspaces():
+def load_colorspaces():
     """
     Create the colorspace dataset.
 
