@@ -13,6 +13,9 @@ numpy = "*"
 [tool.poetry.group.dev.dependencies]
 black = "*"
 pytest = "*"
+psrecord = "*"
+# hidden dependency for psrecord
+matplotlib = "*"
 
 [build-system]
 requires = ["poetry-core"]
