@@ -6,6 +6,7 @@ from .colorspaces import Whitepoint
 from .colorspaces import TransferFunctions
 from .colorspaces import TRANSFER_FUNCTIONS_LINEAR
 from .colorspaces import ChromaticAdaptationTransform
+from .colorspaces import disable_colorspaces
 from .colorspaces import get_colorspace
 from .colorspaces import get_available_colorspaces_names_aliases
 from .colorspaces import get_available_colorspaces_names

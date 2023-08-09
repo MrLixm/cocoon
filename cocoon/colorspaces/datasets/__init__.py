@@ -2,6 +2,7 @@ from ._build import load_colorspaces
 
 load_colorspaces()
 
+from .browse import disable_colorspaces
 from .browse import get_available_colorspaces
 from .browse import get_available_colorspaces_names
 from .browse import get_available_colorspaces_names_aliases

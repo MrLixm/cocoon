@@ -5,6 +5,7 @@ from .base import Whitepoint
 from .base import TransferFunctions
 from .base import TRANSFER_FUNCTIONS_LINEAR
 from .cats import ChromaticAdaptationTransform
+from .datasets import disable_colorspaces
 from .datasets import get_colorspace
 from .datasets import get_available_colorspaces_names_aliases
 from .datasets import get_available_colorspaces_names
