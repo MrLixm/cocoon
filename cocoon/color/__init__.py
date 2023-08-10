@@ -5,6 +5,7 @@ from ._encodings import convert_int8_to_float
 from ._encodings import convert_float_to_int8
 from ._rgb import RGBAColor
 from ._xyz import XYZColor
+from ._lchab import LCHabColor
 from ._rgb_str import ColorStringFormat
 from ._rgb_str import ValidatorResult
 from ._rgb_str import convert_str_to_color

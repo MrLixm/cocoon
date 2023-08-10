@@ -24,3 +24,4 @@ from .colorspaces import exr_chromaticities_to_colorspace
 from .colorspaces import colorspace_to_exr_chromaticities
 from .color import RGBAColor
 from .color import XYZColor
+from .color import LCHabColor
