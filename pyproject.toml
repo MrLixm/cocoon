@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "cocoon"
-version = "0.6.1"
+version = "0.7.0"
 description = "Colorspace conversion and color manipulation library."
 authors = ["Liam Collod <monsieurlixm@gmail.com>"]
 readme = "README.md"
